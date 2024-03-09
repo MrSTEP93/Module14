@@ -27,7 +27,7 @@ namespace Module14.Final1
 
                         foreach (var contact in page)
                             Console.WriteLine($"{contact.Name} {contact.LastName} :: {contact.PhoneNumber}");
-                    }
+                        }
                     else
                         Console.WriteLine("There is no records on this page");
                 }
