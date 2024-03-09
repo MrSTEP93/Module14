@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Module14.Task2
 {
@@ -9,11 +10,73 @@ namespace Module14.Task2
         static void Main(string[] args)
         {
             //WorkWithCities();
-
             //WorkWithStudents();
-
             //WorkWithcompanies();
+            //WorkWithNums();
+            //StudentsWithCourses();
 
+            var contacts = new List<Contact>()
+            {
+                new Contact() { Name = "Андрей", Phone = 7999945005 },
+                new Contact() { Name = "Сергей", Phone = 799990455 },
+                new Contact() { Name = "Иван", Phone = 79999675 },
+                new Contact() { Name = "Игорь", Phone = 8884994 },
+                new Contact() { Name = "Анна", Phone = 665565656 },
+                new Contact() { Name = "Василий", Phone = 3434 }
+            };
+
+            while (true)
+            {
+                Console.WriteLine("Enter the number of page: ");
+                if (Byte.TryParse(Console.ReadLine(), out byte pageNum))
+                {
+                    var page = contacts.Skip((pageNum-1)*2).Take(2);
+
+                    foreach (var contact in page)
+                    {
+                        Console.WriteLine($"Name = {contact.Name}; phone = {contact.Phone}");
+                    }
+                }
+            }
+        }
+
+
+        private static void StudentsWithCourses()
+        {
+            var students = new List<Student>
+            {
+               new Student {Name="Алина", Age=23, Languages = new List<string> {"английский", "немецкий" }},
+               new Student {Name="Сергей", Age=21, Languages = new List<string> {"английский", "французский" }},
+               new Student {Name="Дмитрий", Age=29, Languages = new List<string> {"английский", "испанский" }},
+               new Student {Name="Дарья", Age=24, Languages = new List<string> {"испанский", "немецкий" }},
+               new Student {Name="Василий", Age=26, Languages = new List<string> {"русский", "украинский", "английский" }}
+            };
+
+            // Список курсов
+            var courses = new List<Course>
+            {
+               new Course {Name="Язык программирования C#", StartDate = new DateTime(2020, 12, 20)},
+               new Course {Name="Язык SQL и реляционные базы данных", StartDate = new DateTime(2020, 12, 15)},
+            };
+            /*
+            var newStudents = students.SelectMany(s => s.Languages, (st, lang, course) => new { Student = st, Lang = lang, co }).
+                Where(st => st.Student.Age < 25 && st.Lang == "английский");
+            */
+
+            var studentsCsharp = from stud in students
+                                 from course in courses
+                                 where stud.Age < 25
+                                 let birthYear = DateTime.Now.Year - stud.Age
+                                 where stud.Languages.Contains("английский")
+                                 where course.Name.Contains("C#")
+                                 select new { studName = stud.Name, birthYear, CourseName = course.Name };
+
+            foreach (var entity in studentsCsharp)
+                Console.WriteLine($"Course: {entity.CourseName} :: {entity.studName} of {entity.birthYear}");
+        }
+
+        private static void WorkWithNums()
+        {
             var numsList = new List<int[]>()
             {
                new[] {2, 3, 7, 1},
@@ -66,7 +129,11 @@ namespace Module14.Task2
 
             //var selectedStudents = students.Where(s => (s.Age < 28) && s.Languages)
 
-            // Выведем результат
+            PrintStudents(selectedStudents);
+        }
+
+        private static void PrintStudents(IEnumerable<Student> selectedStudents)
+        {
             foreach (Student student in selectedStudents)
                 Console.WriteLine($"{student.Name} - {student.Age}");
         }
@@ -128,6 +195,12 @@ namespace Module14.Task2
         }
     }
 
+    internal class Contact
+    {
+        internal string Name;
+        internal long Phone;
+    }
+
     public class Student
     {
         public string Name;
@@ -143,5 +216,11 @@ namespace Module14.Task2
             Age = age;
             Languages = langs;
         }
+    }
+
+    public class Course
+    {
+        public string Name;
+        public DateTime StartDate;
     }
 }
